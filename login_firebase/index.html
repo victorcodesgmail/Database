@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Fire base</title>
+</head>
+<body>
+   <label>First Name</label>
+   <input type="text" id="fnameapp"/>
+   <br><br>
+   <label>Last Name</label>
+   <input type="text" id="lnameapp"/>
+   <br><br>
+   <label>Department</label>
+   <select id="departmentapp">
+      <option value="Actua">ACTUA</option>
+      <option value="San">SAN</option>
+      <option value="Hae">HAE</option>
+      <option value="Nas">NAS</option>
+   </select>
+   <br><br>
+   <select id="swimapp">
+      <option value="At">TUA</option>
+      <option value="fe">veN</option>
+      <option value="Hw">HweAE</option>
+      <option value="Ns">NAS</option>
+   </select>
+   <br><br>
+   <label>CNIC</label>
+   <input type="number" id="nic"/>
+   <button id="add">Add</button>
+   <button id="delete">Delete</button>
+   <button id="retrieve">Retrieve</button>
+   <button id="update">Update</button>
+
+   <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+      import { getDatabase, ref, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyD2992p0tbG4hT-ydULJ-Y256tvJfNAVXI",
+        authDomain: "login-aeccc.firebaseapp.com",
+        databaseURL: "https://login-aeccc-default-rtdb.firebaseio.com",
+        projectId: "login-aeccc",
+        storageBucket: "login-aeccc.appspot.com",
+        messagingSenderId: "803748479143",
+        appId: "1:803748479143:web:24ca27486cba7b7c6ddb82"
+      };
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase();
+
+      let fnameapp = document.getElementById('fnameapp');
+      let lnameapp = document.getElementById('lnameapp');
+      let departmentapp = document.getElementById('departmentapp');
+      let swimapp = document.getElementById('swimapp');
+      let nic = document.getElementById('nic');
+
+      let del = document.getElementById('delete');
+      let updateButton = document.getElementById('update');
+      let ret = document.getElementById('retrieve');
+
+      function addData() {
+         set(ref(db, 'EmployeeSet/' + updateButton.value), {
+            nameofemployee: {
+               firstname: fnameapp.value,
+               lastname: lnameapp.value
+            },
+            department: departmentapp.value,
+            canswim: (swimapp.value == "yes"),
+            cnic: Number(nic.value)
+         }).then(() => {
+            alert("Data Added successfully!");
+         }).catch((error) => {
+            console.error("Error adding data:", error);
+            alert("Unsuccessful!");
+         });
+      }
+
+      function retrieveData() {
+         const dbref = ref(db);
+         get(child(dbref, 'EmployeeSet/' + updateButton.value)).then((snapshot) => {
+            if (snapshot.exists()) {
+               fnameapp.value = snapshot.val().nameofemployee.firstname;
+               lnameapp.value = snapshot.val().nameofemployee.lastname;
+               departmentapp.value = snapshot.val().department;
+               swimapp.value = (snapshot.val().canswim) ? "yes" : "no";
+            } else {
+               alert("Data not found!");
+            }
+         }).catch((error) => {
+            console.error("Error retrieving data:", error);
+            alert("Unsuccessful!");
+         });
+      }
+
+      function updateData() {
+         update(ref(db, 'EmployeeSet/' + updateButton.value), {
+            nameofemployee: {
+               firstname: fnameapp.value,
+               lastname: lnameapp.value
+            },
+            department: departmentapp.value,
+            canswim: (swimapp.value == "yes")
+         }).then(() => {
+            alert("Data updated successfully!");
+         }).catch((error) => {
+            console.error("Error updating data:", error);
+            alert("Unsuccessful!");
+         });
+      }
+
+      function deleteData() {
+         remove(ref(db, 'EmployeeSet/' + updateButton.value)).then(() => {
+            alert("Data deleted successfully!");
+         }).catch((error) => {
+            console.error("Error deleting data:", error);
+            alert("Unsuccessful!");
+         });
+      }
+
+      add.addEventListener('click', addData);
+      ret.addEventListener('click', retrieveData);
+      del.addEventListener('click', deleteData);
+      updateButton.addEventListener('click', updateData);
+   </script>
+</body>
+</html>
